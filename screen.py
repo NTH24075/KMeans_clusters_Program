@@ -136,8 +136,8 @@ while running:
                             ERROR+=distance(clusters[i],points[j])
                 print("run")
             if mouse_x >= 850 and mouse_x <= 1050 and mouse_y >= 230 and mouse_y <= 280:
-                clusters.clear()
                 label.clear()
+                clusters.clear()
                 for i in range(K):
                     random_point = [randint(0, 700), randint(0, 500)]
                     clusters.append(random_point)
@@ -145,7 +145,7 @@ while running:
             if mouse_x >= 850 and mouse_x <= 1050 and mouse_y >= 400 and mouse_y <= 450:
                 try:
                     kmeans = KMeans(n_clusters=K).fit(points)
-
+                    label = kmeans.predict(points)
                     clusters = kmeans.cluster_centers_
 
                 except:
@@ -163,14 +163,21 @@ while running:
                 point = [mouse_x - 50, mouse_y - 50]
                 points.append(point)
     # draw cluster
+    print(clusters)
+    labels=[]
+    for i in label:
+        labels.append(i)
+    tmp_clusters=[]
+    for i in clusters:
+        pass
     for i in range(len(clusters)):
         pygame.draw.circle(screen, colors[i], (clusters[i][0] + 50, clusters[i][1] + 50), 7)
         pygame.draw.circle(screen, black, (clusters[i][0] + 50, clusters[i][1] + 50), 4)
     # draw points
     for i in range(len(points)):
         pygame.draw.circle(screen, black, (points[i][0] + 50, points[i][1] + 50), 5)
-        if label == []:
+        if labels == []:
             pygame.draw.circle(screen, white, (points[i][0] + 50, points[i][1] + 50), 4)
         else :
-            pygame.draw.circle(screen, colors[label[i]], (points[i][0] + 50, points[i][1] + 50), 4)
+            pygame.draw.circle(screen, colors[labels[i]], (points[i][0] + 50, points[i][1] + 50), 4)
     pygame.display.flip()
