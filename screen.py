@@ -41,7 +41,7 @@ K = 0
 ERROR = 0
 points = []
 clusters = []
-label = []
+labels = []
 
 while running:
     clock.tick(30)
@@ -107,7 +107,7 @@ while running:
             if mouse_x >= 850 and mouse_x <= 1050 and mouse_y >= 150 and mouse_y <= 200:
                 if clusters==[]:
                     continue
-                label.clear()
+                labels.clear()
                 for q in points:
                     min_distance = 9999999999999
                     index_min=0
@@ -115,28 +115,24 @@ while running:
                         if distance(q,i) < min_distance:
                             index_min=clusters.index(i)
                             min_distance = distance(q,i)
-                    label.append(index_min)
+                    labels.append(index_min)
                 #update cluster
                 for i in range(K):
                     new_x=0
                     new_y=0
                     count=0
-                    for j in range(len(label)):
-                        if label[j] == i:
+                    for j in range(len(labels)):
+                        if labels[j] == i:
                             new_x+=points[j][0]
                             new_y+=points[j][1]
                             count+=1
                     if(count!=0):
                         clusters[i]=[new_x/count,new_y/count]
                 #update Error
-                ERROR =0
-                for i in range(K):
-                    for j in range(len(label)):
-                        if label[j] == i:
-                            ERROR+=distance(clusters[i],points[j])
+
                 print("run")
             if mouse_x >= 850 and mouse_x <= 1050 and mouse_y >= 230 and mouse_y <= 280:
-                label.clear()
+                labels.clear()
                 clusters.clear()
                 for i in range(K):
                     random_point = [randint(0, 700), randint(0, 500)]
@@ -145,9 +141,17 @@ while running:
             if mouse_x >= 850 and mouse_x <= 1050 and mouse_y >= 400 and mouse_y <= 450:
                 try:
                     kmeans = KMeans(n_clusters=K).fit(points)
-                    label = kmeans.predict(points)
+                    labels = kmeans.predict(points)
                     clusters = kmeans.cluster_centers_
-
+                    # cleaning craw data label and cluster after using sklearn KMeans
+                    tmp_labels = []
+                    for i in labels:
+                        tmp_labels.append(i)
+                    labels = tmp_labels
+                    tmp_clusters = []
+                    for i in clusters:
+                        tmp_clusters.append([int(i[0]), int(i[1])])
+                    clusters = tmp_clusters
                 except:
                     print("error")
                 print("Algorithm")
@@ -159,17 +163,22 @@ while running:
                 print("reset")
             #  point in panel
             if 50 < mouse_x < 750 and 50 < mouse_y < 550:
-                label= []
+                labels= []
                 point = [mouse_x - 50, mouse_y - 50]
                 points.append(point)
-    # draw cluster
+
     print(clusters)
-    labels=[]
-    for i in label:
-        labels.append(i)
-    tmp_clusters=[]
-    for i in clusters:
-        pass
+
+    #set ERROR
+    ERROR = 0
+    for i in range(K):
+        for j in range(len(labels)):
+            if labels[j] == i:
+                ERROR += distance(clusters[i], points[j])
+
+
+
+    # draw cluster
     for i in range(len(clusters)):
         pygame.draw.circle(screen, colors[i], (clusters[i][0] + 50, clusters[i][1] + 50), 7)
         pygame.draw.circle(screen, black, (clusters[i][0] + 50, clusters[i][1] + 50), 4)
